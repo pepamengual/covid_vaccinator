@@ -53,14 +53,20 @@ def read_fasta(file_path):
     return data
 
 def predicting_binding_affinity(predictor, fasta_data, human_alleles, threshold):
+    """
+    Runs mhcflurry and predicts binding affinity and peptide processing
+    Filters the candidates by a final presentation score using a threshold
+    Can be changed by other metrics, such as affinity in nm -> threshold must be adjusted while invoking this function
+    """
     data = predictor.predict_sequences(
                 sequences=fasta_data,
                 alleles=human_alleles,
                 result="filtered",
-                comparison_quantity="affinity",
+                comparison_quantity="presentation_score",
                 filter_value=threshold,
                 verbose=0)
-    print(data)
+    data.to_csv("predicted_affinities.csv")
+    return data
 
 def main():
     fasta_file = "fasta.fa"
@@ -68,7 +74,7 @@ def main():
     alleles = supported_alleles(predictor)
     human_alleles = filter_human_alleles(alleles)
     fasta_data = read_fasta(fasta_file)
-    predicting_binding_affinity(predictor, fasta_data, ["HLA-A*02:01"], threshold=500)
+    data = predicting_binding_affinity(predictor, fasta_data, human_alleles, threshold=0.4)
 
 main()
 
