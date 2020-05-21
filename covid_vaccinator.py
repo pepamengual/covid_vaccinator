@@ -52,7 +52,15 @@ def read_fasta(file_path):
         data.setdefault(name, sequence)
     return data
 
-#def predictor(fasta_data, alleles, threshold):
+def predicting_binding_affinity(predictor, fasta_data, human_alleles, threshold):
+    data = predictor.predict_sequences(
+                sequences=fasta_data,
+                alleles=human_alleles,
+                result="filtered",
+                comparison_quantity="affinity",
+                filter_value=threshold,
+                verbose=0)
+    print(data)
 
 def main():
     fasta_file = "fasta.fa"
@@ -60,6 +68,7 @@ def main():
     alleles = supported_alleles(predictor)
     human_alleles = filter_human_alleles(alleles)
     fasta_data = read_fasta(fasta_file)
+    predicting_binding_affinity(predictor, fasta_data, ["HLA-A*02:01"], threshold=500)
 
 main()
 
